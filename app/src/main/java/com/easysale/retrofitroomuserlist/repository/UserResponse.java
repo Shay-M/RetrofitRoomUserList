@@ -1,4 +1,4 @@
-package com.easysale.retrofitroomuserlist.data.api;
+package com.easysale.retrofitroomuserlist.repository;
 
 import com.easysale.retrofitroomuserlist.data.model.User;
 
