@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.easysale.retrofitroomuserlist"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -48,13 +48,13 @@ dependencies {
     implementation libs.retrofit
     implementation libs.converter.gson
 
-    // Room
-    implementation libs.room.runtime
-    annotationProcessor libs.androidx.room.compiler
-
     // Lombok
     compileOnly libs.lombok
     annotationProcessor libs.lombok
+
+    // Room
+    implementation libs.room.runtime
+    annotationProcessor libs.androidx.room.compiler
 
     // Glide
     implementation libs.glide
@@ -62,4 +62,11 @@ dependencies {
 
     // RecyclerView
     implementation libs.androidx.recyclerview
+
+    // Mockito - Mockito allows you to create mock objects and define their behavior
+    testImplementation libs.mockito.core
+    testImplementation libs.mockito.inline
+
+    // AndroidX Test Core (for LiveData testing)
+    testImplementation libs.androidx.core.testing
 }
