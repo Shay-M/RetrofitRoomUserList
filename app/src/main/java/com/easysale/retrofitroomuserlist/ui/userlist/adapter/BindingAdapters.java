@@ -1,7 +1,8 @@
-package com.easysale.retrofitroomuserlist.ui.adapter;
+package com.easysale.retrofitroomuserlist.ui.userlist.adapter;
 
 
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.databinding.BindingAdapter;
 
@@ -13,6 +14,9 @@ public class BindingAdapters {
     public static void loadImage(ImageView view, String imageUrl) {
         Glide.with(view.getContext())
                 .load(imageUrl)
+                .centerCrop()
+                .error(android.R.drawable.stat_notify_error)
                 .into(view);
     }
+
 }
