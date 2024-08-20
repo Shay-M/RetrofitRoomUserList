@@ -1,7 +1,6 @@
 package com.easysale.retrofitroomuserlist.ui.userlist.adapter;
 
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -12,15 +11,14 @@ import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.databinding.UserItemBinding;
 import com.easysale.retrofitroomuserlist.ui.UserViewHolder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
     public static final String TAG = "UserAdapter";
-    private List<User> userList;
+    private List<User> mUserList;
 
     public UserAdapter(List<User> users) {
-        this.userList = users;
+        mUserList = users;
     }
 
     @NonNull
@@ -33,17 +31,17 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        User user = userList.get(position);
+        User user = mUserList.get(position);
         holder.bind(user);
     }
 
     @Override
     public int getItemCount() {
-        return userList != null ? userList.size() : 0;
+        return mUserList != null ? mUserList.size() : 0;
     }
 
     public void setUserList(List<User> userList) {
-        this.userList = userList;
+        mUserList = userList;
         notifyDataSetChanged();
     }
 }
