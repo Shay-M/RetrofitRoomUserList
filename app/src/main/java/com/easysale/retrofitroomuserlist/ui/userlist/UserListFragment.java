@@ -36,18 +36,22 @@ public class UserListFragment extends Fragment {
 
         setupRecyclerView();
         observeData();
-        userListViewModel.fetchUsers(1); // Fetch the first page of users
+
+        // Fetch all users across multiple pages when the fragment is created
+        userListViewModel.fetchAllUsers();
     }
 
     private void setupRecyclerView() {
         binding.recyclerViewUsers.setLayoutManager(new LinearLayoutManager(getContext()));
-        userAdapter = new UserAdapter( new ArrayList<>());
+        userAdapter = new UserAdapter(new ArrayList<>());
         binding.recyclerViewUsers.setAdapter(userAdapter);
     }
 
     private void observeData() {
         userListViewModel.getUsersLiveData().observe(getViewLifecycleOwner(), users -> {
-            userAdapter.setUserList(users);
+            if (users != null && !users.isEmpty()) {
+                userAdapter.setUserList(users);
+            }
         });
     }
 
