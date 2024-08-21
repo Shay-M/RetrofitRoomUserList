@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.easysale.retrofitroomuserlist.databinding.FragmentUserListBinding;
 import com.easysale.retrofitroomuserlist.ui.userlist.adapter.UserAdapter;
@@ -20,6 +21,9 @@ public class UserListFragment extends Fragment {
     private FragmentUserListBinding binding;
     private UserListViewModel userListViewModel;
     private UserAdapter userAdapter;
+
+    public UserListFragment() {
+    }
 
     @Nullable
     @Override
@@ -37,8 +41,22 @@ public class UserListFragment extends Fragment {
         setupRecyclerView();
         observeData();
 
-        // Fetch all users across multiple pages when the fragment is created
-        userListViewModel.fetchAllUsers();
+        // Load the first batch of users
+        userListViewModel.fetchUsers();
+
+        // Setup scroll listener to load more users when reaching the end of the list
+        binding.recyclerViewUsers.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == userAdapter.getItemCount() - 1) {
+                    // Reached the end of the list, load more users
+                    userListViewModel.fetchUsers();
+                }
+            }
+        });
     }
 
     private void setupRecyclerView() {
@@ -49,9 +67,7 @@ public class UserListFragment extends Fragment {
 
     private void observeData() {
         userListViewModel.getUsersLiveData().observe(getViewLifecycleOwner(), users -> {
-            if (users != null && !users.isEmpty()) {
-                userAdapter.setUserList(users);
-            }
+            userAdapter.setUserList(users);
         });
     }
 
@@ -61,3 +77,4 @@ public class UserListFragment extends Fragment {
         binding = null;  // Prevent memory leaks
     }
 }
+

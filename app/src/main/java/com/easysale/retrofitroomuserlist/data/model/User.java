@@ -9,8 +9,6 @@ import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import retrofit2.http.GET;
 
 @Data
 @Entity(tableName = "users")

@@ -1,6 +1,5 @@
 package com.easysale.retrofitroomuserlist.repository;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -16,10 +15,8 @@ import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.data.model.UserResponse;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,42 +24,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/*
-public class UserRepository {
-    private final UserDao userDao;
-    private final ExecutorService executorService;
-    private final String TAG = "UserRepository";
-
-    public UserRepository(Application application) {
-        AppDatabase database = AppDatabase.getInstance(application);
-        userDao = database.userDao();
-        ApiService apiService = RetrofitClient.getApiService();
-        executorService = Executors.newSingleThreadExecutor();
-    }
-
-    public LiveData<List<User>> getAllUsers() {
-
-        MutableLiveData<List<User>> usersLiveData = new MutableLiveData<>();
-        executorService.execute(() -> {
-            List<User> users = userDao.getAllUsers();
-            usersLiveData.postValue(users);
-        });
-        return usersLiveData;
-    }
-
-    public void insert(User user) {
-        executorService.execute(() -> userDao.insert(user));
-    }
-
-    public void update(User user) {
-        executorService.execute(() -> userDao.update(user));
-    }
-
-    public void delete(User user) {
-        executorService.execute(() -> userDao.delete(user));
-    }
-}
-*/
 
 public class UserRepository {
     private static final String TAG = "UserRepository";
