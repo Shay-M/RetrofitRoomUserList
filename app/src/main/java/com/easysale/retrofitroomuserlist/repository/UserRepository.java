@@ -24,7 +24,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class UserRepository {
     private static final String TAG = "UserRepository";
     private final List<User> allUsers = new ArrayList<>();
@@ -60,7 +59,7 @@ public class UserRepository {
                     allUsers.addAll(users);
 
                     // Insert data into Room using Executor
-                     executor.execute(() -> userDao.insert(users));
+                    executor.execute(() -> userDao.insert(users));
 
                     usersLiveData.postValue(new ArrayList<>(allUsers));
 
@@ -77,9 +76,42 @@ public class UserRepository {
         });
     }
 
+    public void addUser(User user) {
+        executor.execute(() -> {
+            userDao.insert(user);
+            allUsers.add(user);
+            usersLiveData.postValue(new ArrayList<>(allUsers));
+        });
+    }
+
+    public void updateUser(User user) {
+        executor.execute(() -> {
+            userDao.update(user);
+            int index = allUsers.indexOf(user);
+            if (index != -1) {
+                allUsers.set(index, user);
+                usersLiveData.postValue(new ArrayList<>(allUsers));
+            }
+        });
+    }
+
+    public void deleteUser(User user) {
+        executor.execute(() -> {
+            userDao.delete(user);
+            allUsers.remove(user);
+            usersLiveData.postValue(new ArrayList<>(allUsers));
+        });
+    }
+
+    public void deleteAllUsers() {
+        executor.execute(() -> {
+            userDao.deleteAllUsers();
+            allUsers.clear();
+            usersLiveData.postValue(new ArrayList<>(allUsers));
+        });
+    }
+
     public LiveData<List<User>> getUsersLiveData() {
         return usersLiveData;
     }
 }
-
-
