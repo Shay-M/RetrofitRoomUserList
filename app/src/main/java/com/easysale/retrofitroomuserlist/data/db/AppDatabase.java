@@ -8,7 +8,7 @@ import android.content.Context;
 
 import com.easysale.retrofitroomuserlist.data.model.User;
 
-@Database(entities = {User.class}, version = 1, exportSchema = false)
+@Database(entities = {User.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "user_database";
     private static volatile AppDatabase INSTANCE;

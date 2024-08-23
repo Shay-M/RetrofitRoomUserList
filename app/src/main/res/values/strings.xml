@@ -2,4 +2,11 @@
     <string name="app_name">RetrofitRoomUserList</string>
     <string name="user_avatar">User Avatar</string>
     <string name="list_of_users">List of Users</string>
+    <string name="add_a_user_button">Add A User Button</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_user">Add User</string>
+    <string name="email">Email</string>
+    <string name="avatar_url">User Avatar</string>
 </resources>

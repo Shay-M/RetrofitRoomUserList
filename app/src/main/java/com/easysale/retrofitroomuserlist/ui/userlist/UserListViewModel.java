@@ -30,14 +30,10 @@ public class UserListViewModel extends AndroidViewModel {
         userRepository.fetchUsers();
     }
 
-/*    public void insert(List<Actor> list)
-    {
-        actorRespository.insert(list);
+    public void addUser(User user) {
+        userRepository.addUser(user);
     }
 
-    public LiveData<List<Actor>> getAllActor()
-    {
-        return getAllActors;
-    }*/
+
 }
 

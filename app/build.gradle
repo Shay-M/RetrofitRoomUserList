@@ -40,9 +40,16 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.androidx.navigation.fragment
     implementation libs.androidx.navigation.ui
+    implementation libs.androidx.legacy.support.v4
+    implementation libs.androidx.lifecycle.livedata.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
+
+    // AndroidX Test Core library for ApplicationProvider
+    testImplementation libs.androidx.core
+    androidTestImplementation libs.androidx.core
 
     // Retrofit
     implementation libs.retrofit
@@ -72,4 +79,6 @@ dependencies {
 
     // MockWebServer
     testImplementation libs.mockwebserver
+
+
 }
