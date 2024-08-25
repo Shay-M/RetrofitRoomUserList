@@ -1,4 +1,4 @@
-package com.easysale.retrofitroomuserlist.ui.dialog;
+package com.easysale.retrofitroomuserlist.ui.addnewuser;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

@@ -1,6 +1,8 @@
 package com.easysale.retrofitroomuserlist.repository;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,27 +28,44 @@ import retrofit2.Response;
 
 public class UserRepository {
     private static final String TAG = "UserRepository";
-    private final List<User> allUsers = new ArrayList<>();
     private final UserDao userDao;
     private final ApiService apiService;
-    private final MutableLiveData<List<User>> usersLiveData = new MutableLiveData<>();
     private final AtomicInteger currentPage = new AtomicInteger(1);
     private final AtomicInteger totalPages = new AtomicInteger(1);
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final Executor executor = Executors.newFixedThreadPool(4);
+    private final MutableLiveData<List<User>> usersLiveData = new MutableLiveData<>();
+    private final List<User> allUsers = new ArrayList<>();
+    private final Context context;
 
     public UserRepository(Context context) {
-        AppDatabase db = AppDatabase.getInstance(context);
+        this.context = context.getApplicationContext();
+        AppDatabase db = AppDatabase.getInstance(this.context);
         userDao = db.userDao();
         apiService = RetrofitClient.getApiService();
+        loadUsersFromRoom(); // Attempt to load from Room first
     }
 
-    public LiveData<List<User>> getAllUsers() {
-        return userDao.getAllUsers();
+    // Load users from Room and then API if needed
+    private void loadUsersFromRoom() {
+        executor.execute(() -> {
+            List<User> usersFromRoom = userDao.getAllUsersSync();
+            if (usersFromRoom != null && !usersFromRoom.isEmpty()) {
+                Log.d(TAG, "Loaded users from Room: " + usersFromRoom.size());
+                allUsers.addAll(usersFromRoom);
+                usersLiveData.postValue(usersFromRoom);
+            } else {
+                Log.d(TAG, "No users found in Room");
+            }
+            fetchUsers();
+        });
     }
 
+
+    // Fetch users from API
     public void fetchUsers() {
         if (currentPage.get() > totalPages.get()) {
-            return; // No more pages to load
+            Log.d(TAG, "fetchUsers: No more pages to load or no network available");
+            return; // No more pages to load or no network
         }
 
         apiService.getUsers(currentPage.get()).enqueue(new Callback<>() {
@@ -56,10 +75,18 @@ public class UserRepository {
                     UserResponse userResponse = response.body();
                     totalPages.set(userResponse.getTotalPages());
                     List<User> users = userResponse.getData();
-                    allUsers.addAll(users);
 
-                    // Insert data into Room using Executor
-                    executor.execute(() -> userDao.insert(users));
+                    // Adding only new data that does not exist in the database
+                    List<User> newUsers = new ArrayList<>();
+                    for (User user : users) {
+                        if (!allUsers.contains(user)) {
+                            newUsers.add(user);
+                        }
+                    }
+
+                    allUsers.addAll(newUsers);
+
+                    executor.execute(() -> userDao.insert(newUsers));
 
                     usersLiveData.postValue(new ArrayList<>(allUsers));
 
@@ -76,6 +103,7 @@ public class UserRepository {
         });
     }
 
+    // Add a single user
     public void addUser(User user) {
         executor.execute(() -> {
             userDao.insert(user);
@@ -84,6 +112,16 @@ public class UserRepository {
         });
     }
 
+    // Add a list of users
+    public void addUsers(List<User> users) {
+        executor.execute(() -> {
+            userDao.insert(users);
+            allUsers.addAll(users);
+            usersLiveData.postValue(new ArrayList<>(allUsers));
+        });
+    }
+
+    // Update a user
     public void updateUser(User user) {
         executor.execute(() -> {
             userDao.update(user);
@@ -95,6 +133,7 @@ public class UserRepository {
         });
     }
 
+    // Delete a user
     public void deleteUser(User user) {
         executor.execute(() -> {
             userDao.delete(user);
@@ -103,6 +142,7 @@ public class UserRepository {
         });
     }
 
+    // Delete all users
     public void deleteAllUsers() {
         executor.execute(() -> {
             userDao.deleteAllUsers();
@@ -111,7 +151,10 @@ public class UserRepository {
         });
     }
 
+    // Get live data of users for UI updates
     public LiveData<List<User>> getUsersLiveData() {
         return usersLiveData;
     }
+
+
 }

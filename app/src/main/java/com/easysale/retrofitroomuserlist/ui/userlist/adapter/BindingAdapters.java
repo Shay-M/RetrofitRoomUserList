@@ -15,6 +15,7 @@ public class BindingAdapters {
         Glide.with(view.getContext())
                 .load(imageUrl)
                 .centerCrop()
+                .placeholder(android.R.drawable.stat_sys_download)
                 .error(android.R.drawable.stat_notify_error)
                 .into(view);
     }

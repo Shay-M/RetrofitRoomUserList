@@ -34,6 +34,10 @@ public class UserListViewModel extends AndroidViewModel {
         userRepository.addUser(user);
     }
 
+    public void addUsers(List<User> users) {
+        userRepository.addUsers(users);
+    }
+
 
 }
 

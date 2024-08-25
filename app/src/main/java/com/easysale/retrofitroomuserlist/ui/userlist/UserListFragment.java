@@ -10,9 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.easysale.retrofitroomuserlist.R;
 import com.easysale.retrofitroomuserlist.databinding.FragmentUserListBinding;
 import com.easysale.retrofitroomuserlist.ui.userlist.adapter.UserAdapter;
 
@@ -24,6 +26,7 @@ public class UserListFragment extends Fragment {
     private UserAdapter userAdapter;
 
     public UserListFragment() {
+        // Required empty public constructor
     }
 
     @Nullable
@@ -61,6 +64,7 @@ public class UserListFragment extends Fragment {
 
         binding.addUserButton.setOnClickListener(v -> {
             Log.d("TAG", "onViewCreated: ");
+            Navigation.findNavController(v).navigate(R.id.action_userListFragment_to_addNewUserFragment);
         });
     }
 
@@ -72,7 +76,11 @@ public class UserListFragment extends Fragment {
 
     private void observeData() {
         userListViewModel.getUsersLiveData().observe(getViewLifecycleOwner(), users -> {
-            userAdapter.setUserList(users);
+            if (users != null && !users.isEmpty()) {
+                userAdapter.setUserList(users);
+            } else {
+                Log.d("UserRepository", "No users to display");
+            }
         });
     }
 

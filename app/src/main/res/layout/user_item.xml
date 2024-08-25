@@ -12,12 +12,12 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:padding="16dp"
+        android:layout_height="90dp"
+        android:padding="0dp"
         app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
+        app:cardElevation="3dp"
         app:cardUseCompatPadding="true"
-        app:contentPadding="2dp">
+        app:contentPadding="0dp">
 
 
         <LinearLayout
@@ -27,8 +27,8 @@
 
             <ImageView
                 android:id="@+id/avatar"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:layout_marginEnd="16dp"
                 android:contentDescription="@string/user_avatar"
                 app:imageUrl="@{user.avatar}"
