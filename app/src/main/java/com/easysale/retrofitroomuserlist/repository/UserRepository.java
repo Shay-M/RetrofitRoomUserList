@@ -104,22 +104,38 @@ public class UserRepository {
     }
 
     // Add a single user
-    public void addUser(User user) {
+    public LiveData<Boolean> addUser(User user) {
+        MutableLiveData<Boolean> result = new MutableLiveData<>();
         executor.execute(() -> {
-            userDao.insert(user);
-            allUsers.add(user);
-            usersLiveData.postValue(new ArrayList<>(allUsers));
+            try {
+                userDao.insert(user);
+                allUsers.add(user);
+                usersLiveData.postValue(new ArrayList<>(allUsers));
+                result.postValue(true); // Notify success
+            } catch (Exception e) {
+                Log.e(TAG, "Error adding user", e);
+                result.postValue(false); // Notify failure
+            }
         });
+        return result;
     }
 
     // Add a list of users
-    public void addUsers(List<User> users) {
-        executor.execute(() -> {
-            userDao.insert(users);
-            allUsers.addAll(users);
-            usersLiveData.postValue(new ArrayList<>(allUsers));
-        });
-    }
+//    public LiveData<Boolean> addUsers(List<User> users) {
+//        MutableLiveData<Boolean> result = new MutableLiveData<>();
+//        executor.execute(() -> {
+//            try {
+//                userDao.insert(users);
+//                allUsers.addAll(users);
+//                usersLiveData.postValue(new ArrayList<>(allUsers));
+//                result.postValue(true); // Notify success
+//            } catch (Exception e) {
+//                Log.e(TAG, "Error adding users", e);
+//                result.postValue(false); // Notify failure
+//            }
+//        });
+//        return result;
+//    }
 
     // Update a user
     public void updateUser(User user) {
