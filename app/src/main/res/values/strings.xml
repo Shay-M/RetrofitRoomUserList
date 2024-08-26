@@ -9,4 +9,6 @@
     <string name="add_user">Add User</string>
     <string name="email">Email</string>
     <string name="avatar_url">User Avatar</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>
