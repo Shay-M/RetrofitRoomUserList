@@ -1,8 +1,5 @@
 package com.easysale.retrofitroomuserlist.repository;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -10,8 +7,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.easysale.retrofitroomuserlist.data.api.ApiService;
-import com.easysale.retrofitroomuserlist.data.api.RetrofitClient;
-import com.easysale.retrofitroomuserlist.data.db.AppDatabase;
 import com.easysale.retrofitroomuserlist.data.db.UserDao;
 import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.data.model.UserResponse;
@@ -22,10 +17,14 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+@Singleton
 public class UserRepository {
     private static final String TAG = "UserRepository";
     private final UserDao userDao;
@@ -35,17 +34,14 @@ public class UserRepository {
     private final Executor executor = Executors.newFixedThreadPool(4);
     private final MutableLiveData<List<User>> usersLiveData = new MutableLiveData<>();
     private final List<User> allUsers = new ArrayList<>();
-    private final Context context;
 
-    public UserRepository(Context context) {
-        this.context = context.getApplicationContext();
-        AppDatabase db = AppDatabase.getInstance(this.context);
-        userDao = db.userDao();
-        apiService = RetrofitClient.getApiService();
-        loadUsersFromRoom(); // Attempt to load from Room first
+    @Inject
+    public UserRepository(UserDao userDao, ApiService apiService) {
+        this.userDao = userDao;
+        this.apiService = apiService;
+        loadUsersFromRoom();
     }
 
-    // Load users from Room and then API if needed
     private void loadUsersFromRoom() {
         executor.execute(() -> {
             List<User> usersFromRoom = userDao.getAllUsersSync();
@@ -60,15 +56,13 @@ public class UserRepository {
         });
     }
 
-
-    // Fetch users from API
     public void fetchUsers() {
         if (currentPage.get() > totalPages.get()) {
-            Log.d(TAG, "fetchUsers: No more pages to load or no network available");
-            return; // No more pages to load or no network
+            Log.d(TAG, "fetchUsers: No more pages to load");
+            return;
         }
 
-        apiService.getUsers(currentPage.get()).enqueue(new Callback<>() {
+        apiService.getUsers(currentPage.get()).enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(@NonNull Call<UserResponse> call, @NonNull Response<UserResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -76,7 +70,6 @@ public class UserRepository {
                     totalPages.set(userResponse.getTotalPages());
                     List<User> users = userResponse.getData();
 
-                    // Adding only new data that does not exist in the database
                     List<User> newUsers = new ArrayList<>();
                     for (User user : users) {
                         if (!allUsers.contains(user)) {
@@ -84,26 +77,37 @@ public class UserRepository {
                         }
                     }
 
-                    allUsers.addAll(newUsers);
-
-                    executor.execute(() -> userDao.insert(newUsers));
-
-                    usersLiveData.postValue(new ArrayList<>(allUsers));
-
-                    currentPage.incrementAndGet();
+                    if (!newUsers.isEmpty()) {
+                        Log.d(TAG, "Fetched users: " + newUsers.size());
+                        insertUsersIntoDatabase(newUsers);
+                        currentPage.incrementAndGet();
+                    } else {
+                        Log.d(TAG, "No new users found");
+                    }
                 } else {
-                    Log.e(TAG, "onResponse: Error fetching users, response not successful.");
+                    Log.e(TAG, "Failed to fetch users: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<UserResponse> call, @NonNull Throwable t) {
-                Log.e(TAG, "onFailure: Failed to fetch users", t);
+                Log.e(TAG, "Fetch users failed", t);
             }
         });
     }
 
-    // Add a single user
+    private void insertUsersIntoDatabase(List<User> users) {
+        executor.execute(() -> {
+            userDao.insert(users);
+            allUsers.addAll(users);
+            usersLiveData.postValue(new ArrayList<>(allUsers));
+        });
+    }
+
+    public LiveData<List<User>> getUsersLiveData() {
+        return usersLiveData;
+    }
+
     public void addUser(User user) {
         executor.execute(() -> {
             userDao.insert(user);
@@ -112,28 +116,6 @@ public class UserRepository {
         });
     }
 
-    // Add a list of users
-    public void addUsers(List<User> users) {
-        executor.execute(() -> {
-            userDao.insert(users);
-            allUsers.addAll(users);
-            usersLiveData.postValue(new ArrayList<>(allUsers));
-        });
-    }
-
-    // Update a user
-    public void updateUser(User user) {
-        executor.execute(() -> {
-            userDao.update(user);
-            int index = allUsers.indexOf(user);
-            if (index != -1) {
-                allUsers.set(index, user);
-                usersLiveData.postValue(new ArrayList<>(allUsers));
-            }
-        });
-    }
-
-    // Delete a user
     public void deleteUser(User user) {
         executor.execute(() -> {
             userDao.delete(user);
@@ -142,7 +124,6 @@ public class UserRepository {
         });
     }
 
-    // Delete all users
     public void deleteAllUsers() {
         executor.execute(() -> {
             userDao.deleteAllUsers();
@@ -150,11 +131,4 @@ public class UserRepository {
             usersLiveData.postValue(new ArrayList<>(allUsers));
         });
     }
-
-    // Get live data of users for UI updates
-    public LiveData<List<User>> getUsersLiveData() {
-        return usersLiveData;
-    }
-
-
 }

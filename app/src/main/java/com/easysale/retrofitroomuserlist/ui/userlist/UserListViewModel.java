@@ -1,29 +1,26 @@
 package com.easysale.retrofitroomuserlist.ui.userlist;
 
-import android.app.Application;
-
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.repository.UserRepository;
 
 import java.util.List;
 
-import lombok.Getter;
+import javax.inject.Inject;
 
+public class UserListViewModel extends ViewModel {
 
-public class UserListViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
-    @Getter
-    private final LiveData<List<User>> usersLiveData;
 
+    @Inject
+    public UserListViewModel(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    public UserListViewModel(@NonNull Application application) {
-        super(application);
-        userRepository = new UserRepository(application);
-        usersLiveData = userRepository.getUsersLiveData();
+    public LiveData<List<User>> getUsersLiveData() {
+        return userRepository.getUsersLiveData();
     }
 
     public void fetchUsers() {
@@ -34,10 +31,11 @@ public class UserListViewModel extends AndroidViewModel {
         userRepository.addUser(user);
     }
 
-    public void addUsers(List<User> users) {
-        userRepository.addUsers(users);
+    public void deleteUser(User user) {
+        userRepository.deleteUser(user);
     }
 
-
+    public void deleteAllUsers() {
+        userRepository.deleteAllUsers();
+    }
 }
-
