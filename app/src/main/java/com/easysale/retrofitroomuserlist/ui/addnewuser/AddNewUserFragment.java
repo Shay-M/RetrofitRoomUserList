@@ -6,33 +6,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.bumptech.glide.Glide;
 import com.easysale.retrofitroomuserlist.R;
 import com.easysale.retrofitroomuserlist.databinding.FragmentAddNewUserBinding;
 import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.ui.userlist.UserListViewModel;
 import com.easysale.retrofitroomuserlist.utils.avatar.AvatarHandler;
+import com.easysale.retrofitroomuserlist.utils.image.ImagePickerHelper;
 import com.easysale.retrofitroomuserlist.utils.messages.MessageConstants;
 import com.easysale.retrofitroomuserlist.utils.messages.MessageDisplayer;
 import com.easysale.retrofitroomuserlist.utils.messages.SnackBarMessage;
 import com.easysale.retrofitroomuserlist.utils.validation.InputValidator;
 
-
 public class AddNewUserFragment extends DialogFragment {
 
     private Uri selectedPhotoUri;
-    private ActivityResultLauncher<String> pickPhotoLauncher;
     private MessageDisplayer messageDisplayer;
     private FragmentAddNewUserBinding binding;
     private UserListViewModel userListViewModel;
+    private ImagePickerHelper imagePickerHelper;
 
     @Nullable
     @Override
@@ -45,26 +42,17 @@ public class AddNewUserFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         userListViewModel = new ViewModelProvider(requireActivity()).get(UserListViewModel.class);
         messageDisplayer = new SnackBarMessage(view);
 
-        // Initialize ActivityResultLauncher for selecting images
-        pickPhotoLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                result -> {
-                    if (result != null) {
-                        selectedPhotoUri = result;
-                        Glide.with(this)
-                                .load(result)
-                                .centerCrop()
-                                .error(android.R.drawable.ic_dialog_info) // Fallback image on error
-                                .into(binding.avatarImage);
-                    }
-                });
+        // Initialize ImagePickerHelper
+        imagePickerHelper = new ImagePickerHelper(this, imageUri -> {
+            selectedPhotoUri = imageUri;
+            imagePickerHelper.loadImage(imageUri, binding.avatarImage);
+        });
 
         // Set up click listener for the avatar image
-        binding.avatarImage.setOnClickListener(v -> picFromGalleria());
+        binding.avatarImage.setOnClickListener(v -> imagePickerHelper.pickImage());
 
         binding.addUserButton.setOnClickListener(v -> {
             if (InputValidator.validateUserInput(binding.firstNameEditText, binding.lastNameEditText, binding.emailEditText)) {
@@ -97,14 +85,9 @@ public class AddNewUserFragment extends DialogFragment {
         binding.cancelButton.setOnClickListener(this::navigateBackToUserList);
     }
 
-
     private void navigateBackToUserList(View view) {
         dismiss();
         Navigation.findNavController(view).navigate(R.id.action_addNewUserFragment_to_userListFragment);
-    }
-
-    private void picFromGalleria() {
-        pickPhotoLauncher.launch("image/*");
     }
 
     @Override
@@ -112,7 +95,4 @@ public class AddNewUserFragment extends DialogFragment {
         super.onDestroyView();
         binding = null;
     }
-
-
 }
-

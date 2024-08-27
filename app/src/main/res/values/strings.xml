@@ -11,4 +11,8 @@
     <string name="avatar_url">User Avatar</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="save">save</string>
+    <string name="failed_to_delete_user">Failed to delete user</string>
+    <string name="failed_to_update_user">Failed to update user</string>
+    <string name="user_updated_successfully">User updated successfully</string>
 </resources>
