@@ -15,6 +15,9 @@
             app:destination="@id/addNewUserFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_userListFragment_to_userDetailFragment"
+            app:destination="@id/userDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewUserFragment"
@@ -25,5 +28,13 @@
             app:destination="@id/userListFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.easysale.retrofitroomuserlist.ui.userdetail.UserDetailFragment"
+        android:label="UserDetailFragment" >
+        <action
+            android:id="@+id/action_userDetailFragment_to_userListFragment"
+            app:destination="@id/userListFragment" />
     </fragment>
 </navigation>
