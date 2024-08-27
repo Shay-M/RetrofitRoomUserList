@@ -42,7 +42,7 @@ public class UserListFragment extends Fragment {
 
         userListViewModel = new ViewModelProvider(this).get(UserListViewModel.class);
 
-        setupRecyclerView();
+        setupRecyclerView(view);
         observeData();
 
         // Load the first batch of users
@@ -68,9 +68,14 @@ public class UserListFragment extends Fragment {
         });
     }
 
-    private void setupRecyclerView() {
+    private void setupRecyclerView(@NonNull View view) {
         binding.recyclerViewUsers.setLayoutManager(new LinearLayoutManager(getContext()));
         userAdapter = new UserAdapter(new ArrayList<>());
+        userAdapter.setOnUserClickListener(user -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+            Navigation.findNavController(view).navigate(R.id.action_userListFragment_to_userDetailFragment, bundle);
+        });
         binding.recyclerViewUsers.setAdapter(userAdapter);
     }
 
