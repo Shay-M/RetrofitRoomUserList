@@ -50,7 +50,7 @@ public class UserRepositoryTest {
     @Test
     public void insertAndDeleteUser() throws InterruptedException {
         // Insert a user
-        User user = new User(1, "John", "Doe", "JohnDoe@email.com", "avatar_url");
+        User user = new User(1, "John", "Doe", "JohnDoe@email.com", "avatar_url",false);
         userDao.insert(user);
 
         // Ensure the user is inserted
@@ -70,8 +70,8 @@ public class UserRepositoryTest {
     @Test
     public void insertAndDeleteAllUsers() throws InterruptedException {
         // Insert multiple users
-        User user1 = new User(1, "John", "Doe", "JohnDoe@email.com", "avatar_url");
-        User user2 = new User(2, "Jane", "Doe", "JaneDoe@email.com", "avatar_url");
+        User user1 = new User(1, "John", "Doe", "JohnDoe@email.com", "avatar_url",false);
+        User user2 = new User(2, "Jane", "Doe", "JaneDoe@email.com", "avatar_url",false);
         userDao.insert(user1);
         userDao.insert(user2);
 
