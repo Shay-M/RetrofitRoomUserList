@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+import androidx.navigation.Navigator;
+import androidx.navigation.fragment.FragmentNavigator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,10 +73,16 @@ public class UserListFragment extends Fragment {
     private void setupRecyclerView(@NonNull View view) {
         binding.recyclerViewUsers.setLayoutManager(new LinearLayoutManager(getContext()));
         userAdapter = new UserAdapter(new ArrayList<>());
-        userAdapter.setOnUserClickListener(user -> {
+        userAdapter.setOnUserClickListener((user, avatarImageView) -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("user", user);
-            Navigation.findNavController(view).navigate(R.id.action_userListFragment_to_userDetailFragment, bundle);
+
+
+            FragmentNavigator.Extras extra = new FragmentNavigator.Extras.Builder()
+                    .addSharedElement(avatarImageView, "user_avatar_transition")
+                    .build();
+
+            Navigation.findNavController(view).navigate(R.id.action_userListFragment_to_userDetailFragment, bundle, null, extra);
         });
         binding.recyclerViewUsers.setAdapter(userAdapter);
     }

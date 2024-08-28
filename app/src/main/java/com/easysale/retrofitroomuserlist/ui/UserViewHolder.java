@@ -1,7 +1,7 @@
 package com.easysale.retrofitroomuserlist.ui;
 
 
-import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +18,10 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(User user) {
         binding.setUser(user);
-        Log.d("TAG", "user: " + user);
         binding.executePendingBindings();
+    }
+
+    public ImageView getAvatarImageView() {
+        return binding.avatar;
     }
 }

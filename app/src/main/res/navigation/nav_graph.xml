@@ -9,7 +9,7 @@
         android:id="@+id/userListFragment"
         android:name="com.easysale.retrofitroomuserlist.ui.userlist.UserListFragment"
         android:label="fragment_user_list"
-        tools:layout="@layout/fragment_user_list" >
+        tools:layout="@layout/fragment_user_list">
         <action
             android:id="@+id/action_userListFragment_to_addNewUserFragment"
             app:destination="@id/addNewUserFragment"
@@ -22,17 +22,19 @@
     <fragment
         android:id="@+id/addNewUserFragment"
         android:name="com.easysale.retrofitroomuserlist.ui.addnewuser.AddNewUserFragment"
-        android:label="AddNewUserFragment" >
+        android:label="AddNewUserFragment"
+        tools:layout="@layout/fragment_add_new_user">
         <action
             android:id="@+id/action_addNewUserFragment_to_userListFragment"
             app:destination="@id/userListFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/nav_default_pop_enter_anim"
+            app:exitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/userDetailFragment"
         android:name="com.easysale.retrofitroomuserlist.ui.userdetail.UserDetailFragment"
-        android:label="UserDetailFragment" >
+        android:label="UserDetailFragment"
+        tools:layout="@layout/fragment_user_detail">
         <action
             android:id="@+id/action_userDetailFragment_to_userListFragment"
             app:destination="@id/userListFragment" />

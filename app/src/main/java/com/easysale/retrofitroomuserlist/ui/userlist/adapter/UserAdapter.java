@@ -2,6 +2,7 @@ package com.easysale.retrofitroomuserlist.ui.userlist.adapter;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,12 +16,9 @@ import java.util.List;
 import lombok.Setter;
 
 public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
-    public static final String TAG = "UserAdapter";
-    private List<User> mUserList;
-
-    // Listener for user clicks
-    @Setter
+    @Setter // Listener for user clicks
     private OnUserClickListener onUserClickListener;
+    private List<User> mUserList;
 
     // Constructor to initialize the adapter with a list of users
     public UserAdapter(List<User> users) {
@@ -47,7 +45,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
         // Set up click listener for the item
         holder.itemView.setOnClickListener(v -> {
             if (onUserClickListener != null) {
-                onUserClickListener.onUserClick(user);
+                onUserClickListener.onUserClick(user,holder.getAvatarImageView());
             }
         });
     }
@@ -66,6 +64,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserViewHolder> {
 
     // Interface for handling user click events
     public interface OnUserClickListener {
-        void onUserClick(User user);
+        void onUserClick(User user, final ImageView avatarImageView);
     }
 }

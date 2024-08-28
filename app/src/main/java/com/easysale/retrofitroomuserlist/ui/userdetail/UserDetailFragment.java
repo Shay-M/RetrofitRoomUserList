@@ -2,12 +2,10 @@ package com.easysale.retrofitroomuserlist.ui.userdetail;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.bumptech.glide.Glide;
 import com.easysale.retrofitroomuserlist.R;
 import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.databinding.FragmentUserDetailBinding;
@@ -74,6 +71,11 @@ public class UserDetailFragment extends Fragment {
             userLastNameEditText.setText(user.getLastName());
             userEmailEditText.setText(user.getEmail());
             imagePickerHelper.loadImage(Uri.parse(user.getAvatar()), binding.userAvatarImageView);
+
+            // Ensure transition starts after the view has been created
+            postponeEnterTransition();
+            binding.userAvatarImageView.post(this::startPostponedEnterTransition);
+
         }
 
         // Set up button click listeners
