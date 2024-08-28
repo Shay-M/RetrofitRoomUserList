@@ -36,6 +36,9 @@ public interface UserDao {
     @Query("SELECT * FROM users")
     List<User> getAllUsersSync();
 
+    @Query("SELECT * FROM users WHERE isDeleted = 0")
+    List<User> getAllNonDeletedUsersSync();
+
 
 }
 

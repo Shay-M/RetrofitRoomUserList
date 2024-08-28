@@ -1,8 +1,6 @@
 package com.easysale.retrofitroomuserlist.repository;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -42,7 +40,7 @@ public class UserRepository {
         AppDatabase db = AppDatabase.getInstance(this.context);
         userDao = db.userDao();
         apiService = RetrofitClient.getApiService();
-        loadUsersFromRoom(); // Attempt to load from Room first
+        loadUsersFromRoom();
     }
 
     // Load users from Room and then API if needed
@@ -51,8 +49,14 @@ public class UserRepository {
             List<User> usersFromRoom = userDao.getAllUsersSync();
             if (usersFromRoom != null && !usersFromRoom.isEmpty()) {
                 Log.d(TAG, "Loaded users from Room: " + usersFromRoom.size());
-                allUsers.addAll(usersFromRoom);
-                usersLiveData.postValue(usersFromRoom);
+                // סינון משתמשים שנמחקו מתוך הרשימה המקומית
+                allUsers.clear();
+                for (User user : usersFromRoom) {
+                    if (!user.isDeleted()) {
+                        allUsers.add(user);
+                    }
+                }
+                usersLiveData.postValue(new ArrayList<>(allUsers));
             } else {
                 Log.d(TAG, "No users found in Room");
             }
@@ -64,7 +68,7 @@ public class UserRepository {
     // Fetch users from API
     public void fetchUsers() {
         if (currentPage.get() > totalPages.get()) {
-            Log.d(TAG, "fetchUsers: No more pages to load or no network available");
+            Log.d(TAG, "fetchUsers: No more pages to load or no network available.\nCurrent page: " + currentPage.get() + ", Total pages: " + totalPages.get());
             return; // No more pages to load or no network
         }
 
@@ -79,7 +83,7 @@ public class UserRepository {
                     // Adding only new data that does not exist in the database
                     List<User> newUsers = new ArrayList<>();
                     for (User user : users) {
-                        if (!allUsers.contains(user)) {
+                        if (!containsUser(allUsers, user)) {
                             newUsers.add(user);
                         }
                     }
@@ -88,7 +92,15 @@ public class UserRepository {
 
                     executor.execute(() -> userDao.insert(newUsers));
 
-                    usersLiveData.postValue(new ArrayList<>(allUsers));
+                    // Filter out deleted users before updating LiveData
+                    List<User> nonDeletedUsers = new ArrayList<>();
+                    for (User user : allUsers) {
+                        if (!user.isDeleted()) {
+                            nonDeletedUsers.add(user);
+                        }
+                    }
+
+                    usersLiveData.postValue(new ArrayList<>(nonDeletedUsers));
 
                     currentPage.incrementAndGet();
                 } else {
@@ -102,6 +114,16 @@ public class UserRepository {
             }
         });
     }
+
+    private boolean containsUser(List<User> users, User userToCheck) {
+        for (User user : users) {
+            if (user.getId() == userToCheck.getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     // Add a single user
     public LiveData<Boolean> addUser(User user) {
@@ -138,25 +160,66 @@ public class UserRepository {
 //    }
 
     // Update a user
-    public void updateUser(User user) {
+    public LiveData<Boolean> updateUser(User user) {
+        MutableLiveData<Boolean> updateResult = new MutableLiveData<>();
         executor.execute(() -> {
-            userDao.update(user);
-            int index = allUsers.indexOf(user);
-            if (index != -1) {
-                allUsers.set(index, user);
-                usersLiveData.postValue(new ArrayList<>(allUsers));
+            try {
+                userDao.update(user);
+                int index = allUsers.indexOf(user);
+                if (index != -1) {
+                    allUsers.set(index, user);
+                    usersLiveData.postValue(new ArrayList<>(allUsers));
+                }
+                updateResult.postValue(true);
+            } catch (Exception e) {
+                updateResult.postValue(false);
             }
         });
+        return updateResult;
     }
 
     // Delete a user
-    public void deleteUser(User user) {
+    public LiveData<Boolean> deleteUser(User user) {
+        MutableLiveData<Boolean> deleteResult = new MutableLiveData<>();
         executor.execute(() -> {
-            userDao.delete(user);
-            allUsers.remove(user);
-            usersLiveData.postValue(new ArrayList<>(allUsers));
+            try {
+                user.setDeleted(true);
+                userDao.update(user);
+
+                // Update the in-memory list and the LiveData
+                allUsers.remove(user);
+
+                List<User> nonDeletedUsers = new ArrayList<>();
+                for (User u : allUsers) {
+                    if (!u.isDeleted()) {
+                        nonDeletedUsers.add(u);
+                    }
+                }
+
+                usersLiveData.postValue(nonDeletedUsers);
+
+                deleteResult.postValue(true);
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting user", e);
+                deleteResult.postValue(false);
+            }
         });
+        return deleteResult;
     }
+/*    public LiveData<Boolean> deleteUser(User user) {
+        MutableLiveData<Boolean> deleteResult = new MutableLiveData<>();
+        executor.execute(() -> {
+            try {
+                userDao.delete(user);
+                allUsers.remove(user);
+                usersLiveData.postValue(new ArrayList<>(allUsers));
+                deleteResult.postValue(true);
+            } catch (Exception e) {
+                deleteResult.postValue(false);
+            }
+        });
+        return deleteResult;
+    }*/
 
     // Delete all users
     public void deleteAllUsers() {
