@@ -82,11 +82,10 @@ public class AddNewUserFragment extends DialogFragment {
             }
         });
 
-        binding.cancelButton.setOnClickListener(this::navigateBackToUserList);
+//        binding.cancelButton.setOnClickListener(this::navigateBackToUserList);
     }
 
     private void navigateBackToUserList(View view) {
-        dismiss();
         Navigation.findNavController(view).navigate(R.id.action_addNewUserFragment_to_userListFragment);
     }
 

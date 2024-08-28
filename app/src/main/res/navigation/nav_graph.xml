@@ -14,7 +14,7 @@
             android:id="@+id/action_userListFragment_to_addNewUserFragment"
             app:destination="@id/addNewUserFragment"
             app:enterAnim="@anim/fragment_fade_in"
-            app:exitAnim="@anim/fragment_fade_in"
+            app:exitAnim="@anim/fragment_fade_out"
             app:popEnterAnim="@anim/fragment_fade_in"
             app:popExitAnim="@anim/fragment_fade_out" />
         <action
