@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Animate changes to bounds (size and position) of shared elements -->
+    <changeBounds android:duration="300"/>
+    <!-- Animate changes to image transform properties (scale, rotation, etc.) -->
+    <changeImageTransform android:duration="300"/>
+    <!-- Optional: Animate fade in/out for shared elements -->
+    <fade android:duration="300"/>
+
+</transitionSet>

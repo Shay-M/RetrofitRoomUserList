@@ -2,6 +2,8 @@ package com.easysale.retrofitroomuserlist.ui.userdetail;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,12 @@ public class UserDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = FragmentUserDetailBinding.inflate(inflater, container, false);
         return binding.getRoot();
+    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(R.transition.fragment_shared_element_transition));
+        setSharedElementReturnTransition(TransitionInflater.from(getContext()).inflateTransition(R.transition.fragment_shared_element_transition));
     }
 
     @Override
