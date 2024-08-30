@@ -4,7 +4,27 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-08-27T18:58:14.879879Z">
+        <DropdownSelection timestamp="2024-08-29T10:07:25.486542900Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RF8R115RVHR" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="UserRepositoryTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testFetchUsersFromApi()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testUpdateUser()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testLoadUsers()">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-08-29T12:21:16.004557600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\shay\.android\avd\Medium_Phone_API_35.avd" />

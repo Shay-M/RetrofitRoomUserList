@@ -30,6 +30,7 @@ android {
         viewBinding true
         dataBinding true
     }
+
 }
 
 dependencies {
@@ -71,16 +72,18 @@ dependencies {
     implementation libs.androidx.recyclerview
 
     // Mockito - Mockito allows you to create mock objects and define their behavior
-    testImplementation libs.mockito.core
-    testImplementation libs.mockito.inline
+    androidTestImplementation libs.mockito.core
+//    androidTestImplementation libs.mockito.inline
+    androidTestImplementation libs.mockito.android
 
     // AndroidX Test Core (for LiveData testing)
-    testImplementation libs.androidx.core.testing
+    androidTestImplementation libs.androidx.core.testing
 
     // MockWebServer
+    androidTestImplementation libs.mockwebserver
     testImplementation libs.mockwebserver
 
-//    implementation 'com.github.astrit-veliu:Boom:v1.1'
+//    implementation libs.boom
 
 
 }
