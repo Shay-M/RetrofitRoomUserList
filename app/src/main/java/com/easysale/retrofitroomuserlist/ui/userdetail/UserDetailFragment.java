@@ -176,6 +176,7 @@ public class UserDetailFragment extends Fragment {
 
     private void navigateBackToUserList(View view) {
         Navigation.findNavController(view).navigate(R.id.action_userDetailFragment_to_userListFragment);
+//        Navigation.findNavController(view).popBackStack();
     }
 
     @Override

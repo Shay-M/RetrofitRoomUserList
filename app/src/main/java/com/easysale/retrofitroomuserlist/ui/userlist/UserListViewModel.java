@@ -27,16 +27,12 @@ public class UserListViewModel extends AndroidViewModel {
     }
 
     public void fetchUsers() {
-        userRepository.fetchUsers();
+        userRepository.loadUsers();
     }
 
     public LiveData<Boolean> addUser(User user) {
         return  userRepository.addUser(user);
     }
-
-//    public LiveData<Boolean> addUsers(List<User> users) {
-//        return  userRepository.addUsers(users);
-//    }
 
 
 }

@@ -16,7 +16,8 @@
             app:enterAnim="@anim/fragment_fade_in"
             app:exitAnim="@anim/fragment_fade_out"
             app:popEnterAnim="@anim/fragment_fade_in"
-            app:popExitAnim="@anim/fragment_fade_out" />
+            app:popExitAnim="@anim/fragment_fade_out"
+            app:popUpTo="@id/userListFragment" />
         <action
             android:id="@+id/action_userListFragment_to_userDetailFragment"
             app:destination="@id/userDetailFragment"
@@ -35,8 +36,10 @@
             app:destination="@id/userListFragment"
             app:enterAnim="@anim/fragment_fade_in"
             app:exitAnim="@anim/fragment_fade_out"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/fragment_fade_in"
-            app:popExitAnim="@anim/fragment_fade_out" />
+            app:popExitAnim="@anim/fragment_fade_out"
+            app:popUpTo="@id/userListFragment" />
     </fragment>
     <fragment
         android:id="@+id/userDetailFragment"
@@ -48,7 +51,9 @@
             app:destination="@id/userListFragment"
             app:enterAnim="@anim/fragment_fade_in"
             app:exitAnim="@anim/fragment_fade_out"
+            app:launchSingleTop="true"
             app:popEnterAnim="@anim/fragment_fade_in"
-            app:popExitAnim="@anim/fragment_fade_out" />
+            app:popExitAnim="@anim/fragment_fade_out"
+            app:popUpTo="@id/userListFragment" />
     </fragment>
 </navigation>
