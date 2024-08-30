@@ -28,11 +28,16 @@ public class UserRepository {
         Executor executor = Executors.newFixedThreadPool(4);
         roomUserDataSource = new RoomUserDataSource(context, executor);
         apiUserDataSource = new ApiUserDataSource();
-        loadUsersFromRoom();
+    }
+
+    // Constructor for testing with mocks
+    public UserRepository(RoomUserDataSource roomUserDataSource, ApiUserDataSource apiUserDataSource) {
+        this.roomUserDataSource = roomUserDataSource;
+        this.apiUserDataSource = apiUserDataSource;
     }
 
     // Load users from Room and then fetch from API if needed
-    private void loadUsersFromRoom() {
+    public void loadUsers() {
         roomUserDataSource.loadUsersFromRoom(usersFromRoom -> {
             if (usersFromRoom != null && !usersFromRoom.isEmpty()) {
                 Log.d(TAG, "Loaded users from Room: " + usersFromRoom.size());
@@ -43,6 +48,8 @@ public class UserRepository {
                     }
                 }
                 usersLiveData.postValue(new ArrayList<>(allUsers));
+                allUsers.clear();
+                allUsers.addAll(usersFromRoom);
             } else {
                 Log.d(TAG, "No users found in Room");
             }
@@ -56,6 +63,7 @@ public class UserRepository {
             Log.d(TAG, "fetchUsers: No more pages to load.\nCurrent page: " + currentPage.get() + ", Total pages: " + totalPages.get());
             return;
         }
+        Log.d(TAG, "Fetching users for page: " + currentPage.get());
 
         apiUserDataSource.fetchUsers(currentPage.get(), new ApiUserDataSource.ApiUsersCallback() {
             @Override
@@ -65,22 +73,32 @@ public class UserRepository {
 
                 List<User> newUsers = new ArrayList<>();
                 for (User user : users) {
-                    if (!containsUser(allUsers, user)) {
+                    if (!isUserInListAndDeleted(allUsers, user)) {
                         newUsers.add(user);
                     }
                 }
 
-                allUsers.addAll(newUsers);
-                roomUserDataSource.insertUsers(newUsers);
-
                 List<User> nonDeletedUsers = new ArrayList<>();
-                for (User user : allUsers) {
+                for (User user : newUsers) {
                     if (!user.isDeleted()) {
                         nonDeletedUsers.add(user);
                     }
                 }
+
+//                allUsers.addAll(nonDeletedUsers);
+                roomUserDataSource.insertUsers(nonDeletedUsers);
+
+
                 usersLiveData.postValue(new ArrayList<>(nonDeletedUsers));
                 currentPage.incrementAndGet();
+
+                Log.d(TAG, "Users fetched: " + users.size());
+                Log.d(TAG, "All users size after adding: " + allUsers.size());
+                Log.d(TAG, "Total new users added: " + newUsers.size());
+                Log.d(TAG, "Moving to next page: " + currentPage.get());
+
+
+                fetchUsers();
             }
 
             @Override
@@ -90,12 +108,10 @@ public class UserRepository {
         });
     }
 
-    // Check if the user already exists in the list
-    private boolean containsUser(List<User> users, User userToCheck) {
+    private boolean isUserInListAndDeleted(List<User> users, User userToCheck) {
         for (User user : users) {
-            if (user.getId() == userToCheck.getId()) {
-                return true;
-            }
+            if (user.getId() == userToCheck.getId()) return true;
+
         }
         return false;
     }
@@ -126,8 +142,8 @@ public class UserRepository {
     // Delete a user
     public LiveData<Boolean> deleteUser(User user) {
         MutableLiveData<Boolean> deleteResult = new MutableLiveData<>();
-        roomUserDataSource.deleteUser(user);
-        allUsers.remove(user);
+        user.setDeleted(true);
+        roomUserDataSource.updateUser(user);
 
         List<User> nonDeletedUsers = new ArrayList<>();
         for (User u : allUsers) {
