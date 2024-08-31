@@ -1,6 +1,7 @@
 # Android User List App
 
 This repository contains an Android application built using the MVVM architecture, Retrofit for API calls, and Room for local data storage. The app displays a list of users fetched from a server, allows adding, updating, and deleting users, and handles data persistence and offline scenarios.
+You can find the APK file [here](https://github.com/Shay-M/RetrofitRoomUserList/blob/master/app/release/app-release.apk).
 
 ## Table of Contents
 - [Features](#features)
