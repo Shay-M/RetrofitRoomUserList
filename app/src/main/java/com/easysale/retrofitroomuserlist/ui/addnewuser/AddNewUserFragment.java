@@ -43,7 +43,7 @@ public class AddNewUserFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         userListViewModel = new ViewModelProvider(requireActivity()).get(UserListViewModel.class);
-        messageDisplayer = new SnackBarMessage(view);
+        messageDisplayer = new SnackBarMessage(requireView().getRootView());
 
         // Initialize ImagePickerHelper
         imagePickerHelper = new ImagePickerHelper(this, imageUri -> {
