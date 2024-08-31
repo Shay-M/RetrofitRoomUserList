@@ -16,7 +16,6 @@ public class UserDetailViewModel extends AndroidViewModel {
 
     public UserDetailViewModel(@NonNull Application application) {
         super(application);
-        // Initialize UserRepository, possibly using a Dependency Injection framework or manually
         userRepository = new UserRepository(application);
     }
 

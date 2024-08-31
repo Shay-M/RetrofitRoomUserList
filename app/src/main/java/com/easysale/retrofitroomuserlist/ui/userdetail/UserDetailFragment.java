@@ -24,6 +24,8 @@ import com.easysale.retrofitroomuserlist.utils.messages.MessageDisplayer;
 import com.easysale.retrofitroomuserlist.utils.messages.SnackBarMessage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
+
 public class UserDetailFragment extends Fragment {
     private MessageDisplayer messageDisplayer;
     private FragmentUserDetailBinding binding;
@@ -47,7 +49,7 @@ public class UserDetailFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(this).get(UserDetailViewModel.class);
 
-        messageDisplayer = new SnackBarMessage(view);
+        messageDisplayer = new SnackBarMessage(requireView().getRootView());
 
         // Bind UI components
         userFirstNameEditText = binding.userFirstNameEditText;
@@ -89,16 +91,15 @@ public class UserDetailFragment extends Fragment {
             resetUserDetails(user);
         });
 
-        deleteButton.setOnClickListener(v -> {
-            viewModel.deleteUser(user).observe(getViewLifecycleOwner(), isDeleted -> {
-                if (isDeleted) {
-                    messageDisplayer.showMessage(getString(R.string.failed_to_delete_user));
-                    navigateBackToUserList(v);
-                } else {
-                    messageDisplayer.showMessage(String.valueOf(R.string.failed_to_delete_user));
-                }
-            });
-        });
+        deleteButton.setOnClickListener(v -> viewModel.deleteUser(user).observe(getViewLifecycleOwner(), isDeleted -> {
+            if (isDeleted) {
+                Log.d("UserDetailFragment", "User deleted successfully");
+                messageDisplayer.showMessage(getString(R.string.user_deleted_successfully));
+                navigateBackToUserList(v);
+            } else {
+                messageDisplayer.showMessage(String.valueOf(R.string.failed_to_delete_user));
+            }
+        }));
 
         // Set up click listener for the avatar image
         binding.userAvatarImageView.setOnClickListener(v -> imagePickerHelper.pickImage());
@@ -162,7 +163,6 @@ public class UserDetailFragment extends Fragment {
                     messageDisplayer.showMessage(getString(R.string.failed_to_update_user));
                 }
             });
-            ;
         }
     }
 
