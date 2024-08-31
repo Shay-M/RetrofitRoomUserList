@@ -17,11 +17,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserRepository {
     private static final String TAG = "UserRepository";
+
+    // Data sources for Room and API
     private final RoomUserDataSource roomUserDataSource;
     private final ApiUserDataSource apiUserDataSource;
+
+    // Page management
     private final AtomicInteger currentPage = new AtomicInteger(1);
     private final AtomicInteger totalPages = new AtomicInteger(1);
+
+    // LiveData for observing user data changes
     private final MutableLiveData<List<User>> usersLiveData = new MutableLiveData<>();
+
+    // List to store all users
     private final List<User> allUsers = new ArrayList<>();
 
     public UserRepository(Context context) {
@@ -36,20 +44,23 @@ public class UserRepository {
         this.apiUserDataSource = apiUserDataSource;
     }
 
-    // Load users from Room and then fetch from API if needed
+    /**
+     * Load users from Room and then fetch from API if needed.
+     * Updates the LiveData with the loaded users.
+     */
     public void loadUsers() {
         roomUserDataSource.loadUsersFromRoom(usersFromRoom -> {
             if (usersFromRoom != null && !usersFromRoom.isEmpty()) {
                 Log.d(TAG, "Loaded users from Room: " + usersFromRoom.size());
-                allUsers.clear();
-                for (User user : usersFromRoom) {
-                    if (!user.isDeleted()) {
-                        allUsers.add(user);
-                    }
-                }
-                usersLiveData.postValue(new ArrayList<>(allUsers));
+
+                // Filter out deleted users and update LiveData
+                List<User> nonDeletedUsers = filterDeletedUsers(usersFromRoom);
+                usersLiveData.postValue(new ArrayList<>(nonDeletedUsers));
+
+                // Update allUsers with the latest data from Room
                 allUsers.clear();
                 allUsers.addAll(usersFromRoom);
+
             } else {
                 Log.d(TAG, "No users found in Room");
             }
@@ -57,7 +68,10 @@ public class UserRepository {
         });
     }
 
-    // Fetch users from API
+    /**
+     * Fetch users from API.
+     * Stores the fetched users in Room and updates LiveData.
+     */
     public void fetchUsers() {
         if (currentPage.get() > totalPages.get()) {
             Log.d(TAG, "fetchUsers: No more pages to load.\nCurrent page: " + currentPage.get() + ", Total pages: " + totalPages.get());
@@ -71,24 +85,19 @@ public class UserRepository {
                 totalPages.set(userResponse.getTotalPages());
                 List<User> users = userResponse.getData();
 
+                // Filter new users that are not in allUsers and add them to allUsers
                 List<User> newUsers = new ArrayList<>();
                 for (User user : users) {
-                    if (!isUserInListAndDeleted(allUsers, user)) {
+                    if (!allUsers.contains(user)) {
                         newUsers.add(user);
                     }
                 }
 
-                List<User> nonDeletedUsers = new ArrayList<>();
-                for (User user : newUsers) {
-                    if (!user.isDeleted()) {
-                        nonDeletedUsers.add(user);
-                    }
-                }
+                allUsers.addAll(newUsers);
+                roomUserDataSource.insertUsers(newUsers);
 
-//                allUsers.addAll(nonDeletedUsers);
-                roomUserDataSource.insertUsers(nonDeletedUsers);
-
-
+                // Filter out deleted users and update LiveData
+                List<User> nonDeletedUsers = filterDeletedUsers(allUsers);
                 usersLiveData.postValue(new ArrayList<>(nonDeletedUsers));
                 currentPage.incrementAndGet();
 
@@ -96,7 +105,6 @@ public class UserRepository {
                 Log.d(TAG, "All users size after adding: " + allUsers.size());
                 Log.d(TAG, "Total new users added: " + newUsers.size());
                 Log.d(TAG, "Moving to next page: " + currentPage.get());
-
 
                 fetchUsers();
             }
@@ -108,12 +116,20 @@ public class UserRepository {
         });
     }
 
-    private boolean isUserInListAndDeleted(List<User> users, User userToCheck) {
+    /**
+     * Filters out deleted users from the provided list.
+     *
+     * @param users The list of users to filter.
+     * @return A list of non-deleted users.
+     */
+    private List<User> filterDeletedUsers(List<User> users) {
+        List<User> nonDeletedUsers = new ArrayList<>();
         for (User user : users) {
-            if (user.getId() == userToCheck.getId()) return true;
-
+            if (!user.isDeleted()) {
+                nonDeletedUsers.add(user);
+            }
         }
-        return false;
+        return nonDeletedUsers;
     }
 
     // Add a user
@@ -145,12 +161,8 @@ public class UserRepository {
         user.setDeleted(true);
         roomUserDataSource.updateUser(user);
 
-        List<User> nonDeletedUsers = new ArrayList<>();
-        for (User u : allUsers) {
-            if (!u.isDeleted()) {
-                nonDeletedUsers.add(u);
-            }
-        }
+        // Filter out deleted users and update LiveData
+        List<User> nonDeletedUsers = filterDeletedUsers(allUsers);
         usersLiveData.postValue(nonDeletedUsers);
         deleteResult.postValue(true);
         return deleteResult;
