@@ -7,6 +7,16 @@
     android:padding="10dp"
     tools:context=".ui.userlist.UserListFragment">
 
+    <TextView
+        android:id="@+id/no_users_to_display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_users_to_display"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+        app:layout_constraintStart_toStartOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addUserButton"
         android:layout_width="wrap_content"

@@ -62,10 +62,7 @@ public class UserListFragment extends Fragment {
             }
         });
 
-        binding.addUserButton.setOnClickListener(v -> {
-            Log.d("TAG", "onViewCreated: ");
-            Navigation.findNavController(v).navigate(R.id.action_userListFragment_to_addNewUserFragment);
-        });
+        binding.addUserButton.setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_userListFragment_to_addNewUserFragment));
     }
 
     private void setupRecyclerView(@NonNull View view) {
@@ -83,8 +80,9 @@ public class UserListFragment extends Fragment {
         userListViewModel.getUsersLiveData().observe(getViewLifecycleOwner(), users -> {
             if (users != null && !users.isEmpty()) {
                 userAdapter.setUserList(users);
+                binding.noUsersToDisplay.setVisibility(View.GONE);
             } else {
-                Log.d("UserRepository", "No users to display");
+                binding.noUsersToDisplay.setVisibility(View.VISIBLE);
             }
         });
     }

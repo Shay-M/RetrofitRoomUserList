@@ -15,4 +15,6 @@
     <string name="failed_to_delete_user">Failed to delete user</string>
     <string name="failed_to_update_user">Failed to update user</string>
     <string name="user_updated_successfully">User updated successfully</string>
+    <string name="user_deleted_successfully">User deleted successfully</string>
+    <string name="no_users_to_display">No users to display</string>
 </resources>

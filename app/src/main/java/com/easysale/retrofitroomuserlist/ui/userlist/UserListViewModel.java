@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData;
 
 import com.easysale.retrofitroomuserlist.data.model.User;
 import com.easysale.retrofitroomuserlist.repository.UserRepository;
+import com.easysale.retrofitroomuserlist.utils.messages.MessageDisplayer;
+import com.easysale.retrofitroomuserlist.utils.messages.SnackBarMessage;
 
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class UserListViewModel extends AndroidViewModel {
     private final UserRepository userRepository;
     @Getter
     private final LiveData<List<User>> usersLiveData;
-
 
     public UserListViewModel(@NonNull Application application) {
         super(application);
@@ -31,7 +32,7 @@ public class UserListViewModel extends AndroidViewModel {
     }
 
     public LiveData<Boolean> addUser(User user) {
-        return  userRepository.addUser(user);
+        return userRepository.addUser(user);
     }
 
 
