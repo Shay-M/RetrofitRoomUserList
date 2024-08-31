@@ -1,5 +1,6 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -68,6 +69,15 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/userFirstNameEditText" />
+
+        <ImageView
+            android:id="@+id/edit_img_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/userAvatarImageView"
+            app:layout_constraintEnd_toEndOf="@+id/userAvatarImageView"
+            app:srcCompat="@drawable/baseline_edit_24" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

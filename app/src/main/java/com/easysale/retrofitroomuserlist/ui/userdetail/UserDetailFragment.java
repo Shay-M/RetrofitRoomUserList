@@ -120,6 +120,7 @@ public class UserDetailFragment extends Fragment {
         // Show save/cancel buttons and hide edit/delete buttons
         binding.saveButton.setVisibility(View.VISIBLE);
         binding.cancelButton.setVisibility(View.VISIBLE);
+        binding.editImgIcon.setVisibility(View.VISIBLE);
         binding.editButton.setVisibility(View.GONE);
         binding.deleteButton.setVisibility(View.GONE);
     }
@@ -133,6 +134,7 @@ public class UserDetailFragment extends Fragment {
         // Hide save/cancel buttons and show edit/delete buttons
         binding.saveButton.setVisibility(View.GONE);
         binding.cancelButton.setVisibility(View.GONE);
+        binding.editImgIcon.setVisibility(View.GONE);
         binding.editButton.setVisibility(View.VISIBLE);
         binding.deleteButton.setVisibility(View.VISIBLE);
     }
